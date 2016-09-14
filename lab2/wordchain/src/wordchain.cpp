@@ -11,10 +11,14 @@ using namespace std;
 const string ALPHABET  = "abcdefghijklmnopqrstuvwxyz";
 const string FILENAME = "dictionary.txt";
 
-set<string> getDictionary();
+/*Add words from a dictionary file to a given set.*/
+void getDictionary(set<string> &dict);
+/*Prints words from stack to console.*/
 void printStack(stack<string> &words);
+/*Algorithm for finding the shourtest path from one word to an other, replacing one letter at a time only using words from the english language.*/
 void findWordChain(string &w1, string &w2);
-vector<string> getNeighbors(string &word, set<string> &wordList);
+/*Add words from wordlist that differs by one letter to referanced word to a vector.*/
+void getNeighbors(string &word, set<string> &wordList, vector<string> &neighbors);
 
 int main() {
     cout << "Welcome to TDDD86 Word Chain." << endl;
@@ -37,7 +41,8 @@ int main() {
 }
 
 void findWordChain(string &w1, string &w2){
-    set<string> dict = getDictionary();
+    set<string> dict;
+    getDictionary(dict);
 
     queue<stack<string>> wordQueue;
     stack<string> w1Stack;
@@ -53,11 +58,13 @@ void findWordChain(string &w1, string &w2){
         wordQueue.pop();
 
         if(topWord == w2){
+            cout << "Chain from " << w2 << " back to " << w1 << ":" << endl;
             printStack(curStack);
             return;
         }
         else{
-            vector<string> neighbors = getNeighbors(topWord, dict);
+            vector<string> neighbors;
+            getNeighbors(topWord, dict, neighbors);
 
             for(string neighbor : neighbors){
                 if(usedWords.find(neighbor) == usedWords.end()){
@@ -71,8 +78,7 @@ void findWordChain(string &w1, string &w2){
     }
 }
 
-vector<string> getNeighbors(string &word, set<string> &dict){
-    vector<string> neighbors;
+void getNeighbors(string &word, set<string> &dict, vector<string> &neighbors){
 
     for(int letterI = 0; letterI < word.length(); letterI++){
         for(int alphaI = 0; alphaI < ALPHABET.length(); alphaI++){
@@ -84,13 +90,9 @@ vector<string> getNeighbors(string &word, set<string> &dict){
             }
         }
     }
-
-    return neighbors;
 }
 
 void printStack(stack<string> &words){
-    cout << "Chain from data back to code:" << endl;
-
     while(!words.empty()){
         cout << words.top() << " ";
         words.pop();
@@ -99,19 +101,15 @@ void printStack(stack<string> &words){
     cout << endl;
 }
 
-set<string> getDictionary(){
+void getDictionary(set<string> &dict){
     ifstream input;
     input.open(FILENAME);
     string word;
-
-    set<string> dict;
 
     while(input >> word){
         dict.insert(word);
     }
     input.close();
-    return dict;
-
 }
 
 
