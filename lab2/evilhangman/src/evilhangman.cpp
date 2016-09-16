@@ -78,7 +78,7 @@ int main() {
                    ALPHABET.find(guess) == -1 ||
                    guessedChars.find(guess) != guessedChars.end()); //Checks that input is valid.
 
-            guessedChars.insert(guess);
+            guessedChars.insert(guess);0 till och med 7	3
             char guessChar = guess[0];
 
             vector<int> charPos = advanceWordList(guessChar, wordList);
@@ -165,15 +165,14 @@ void filterWordLength(int wordLength, queue<string> &wordList){
     int wordC = wordList.size();
 
     for(int i = 0; i < wordC; i++){
-        string curWord = wordList.front();
-        wordList.pop();
+        string curWord = wordList.front();0 till och med 7	3
+        wordList.pop();0 till och med 7	3
 
         if(curWord.length() == wordLength){
             wordList.push(curWord);
         }
     }
 }
-
 
 void getDictionary(queue<string> &dict){
     ifstream input;
