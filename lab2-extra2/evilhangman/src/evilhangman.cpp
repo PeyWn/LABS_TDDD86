@@ -38,7 +38,7 @@ int main() {
 
     do{
         bool play = true;
-        set<string> guessedChars;
+        set<char> guessedChars;
         int wordLength;
         vector<string> wordList;
         int guesses;
@@ -82,10 +82,10 @@ int main() {
                 cin >> guess;
             }while(guess.length() != 1 ||
                    ALPHABET.find(guess) == -1 ||
-                   guessedChars.find(guess) != guessedChars.end()); //Checks that input is valid.
+                   guessedChars.find(guess[0]) != guessedChars.end()); //Checks that input is valid.
 
-            guessedChars.insert(guess);
             char guessChar = guess[0];
+            guessedChars.insert(guessChar);
 
             vector<int> charPos = advanceWordList(guessChar, wordList, guessedChars);
 
@@ -127,19 +127,30 @@ void insertChars(string &word, vector<int> positions, char newChar){
 vector<int> advanceWordList(char guess, vector<string> &wordList, set<char> &guesses){
     map<vector<int>,vector<string>> partitions;
 
+
     partitionWordList(guess, wordList, partitions);
 
     string loopChars = removeFromString(ALPHABET, guesses);
+
+    int highScore = 0;
+    vector<int> highScoreKey;
+
     for(auto partPair : partitions){
-
+        int score = 0;
         for(char c : loopChars){
-
+            map<vector<int>,vector<string>> guessPartitions;
+            partitionWordList(c, partPair.second, guessPartitions);
+            score += guessPartitions[findLargestPartition(guessPartitions)].size();
         }
+        if(score > highScore){
+            highScore = score;
+            highScoreKey = partPair.first;
+        }
+        cout << "Score: " << score  << " PartitionSize: " << partPair.second.size() << " Current HighScore: " << highScore << endl;
     }
-    //vector<int> longestKey = findLargestPartition(partitions);
 
-    wordList = partitions[longestKey]; //Replace wordlist
-    return longestKey;
+    wordList = partitions[highScoreKey]; //Replace wordlist
+    return highScoreKey;
 }
 
 string removeFromString(string alfa, set<char> &charsToRm){
@@ -149,6 +160,8 @@ string removeFromString(string alfa, set<char> &charsToRm){
             newString.append(1,c);
         }
     }
+
+    return newString;
 }
 
 vector<int> findLargestPartition(map<vector<int>,vector<string>> &partitions){
