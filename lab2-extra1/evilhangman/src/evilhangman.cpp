@@ -16,7 +16,7 @@ vector<int> findAllLetters(string word, char letter);
 /* Replaces wordList with the biggest subset of words that are still possible after the given guess in hangman.
  * Returns the positions of the guessed char in the words in the subset.
  */
-vector<int> advanceWordList(char guess, queue<string> &wordList);
+vector<int> advanceWordList(char guess, queue<string> &wordList, bool lastGuess);
 
 //Inserts the given char in the word at all the positions from the vector.
 void insertChars(string &word, vector<int> positions, char newChar);
@@ -37,7 +37,7 @@ int main() {
         queue<string> wordList;
         int guesses;
 
-        cout << "Welcome to Hangman." << endl;
+        cout << "Welcome to ExtraHangman." << endl;
 
         do{     //Handles the first game setting question: word length
             getDictionary(wordList);
@@ -81,7 +81,7 @@ int main() {
             guessedChars.insert(guess);
             char guessChar = guess[0];
 
-            vector<int> charPos = advanceWordList(guessChar, wordList);
+            vector<int> charPos = advanceWordList(guessChar, wordList, (guesses == 1));
 
             insertChars(guessedString, charPos, guessChar);
 
@@ -118,7 +118,7 @@ void insertChars(string &word, vector<int> positions, char newChar){
     }
 }
 
-vector<int> advanceWordList(char guess, queue<string> &wordList){
+vector<int> advanceWordList(char guess, queue<string> &wordList, bool lastGuess){
     map<vector<int>,queue<string>> partitions;
 
     while(!wordList.empty()){
@@ -135,13 +135,22 @@ vector<int> advanceWordList(char guess, queue<string> &wordList){
         partitions[curPositions].push(curWord);
     }
 
-    //Find the longest queue
-    int longest = 0;
     vector<int> longestKey;
-    for(auto wordPairs:partitions){
-        if(wordPairs.second.size() > longest){
-            longest = wordPairs.second.size();
-            longestKey = wordPairs.first;
+
+    //Better behaviour for the players last guess
+    //Players last guess and there is a word without the letter
+    if(lastGuess && (partitions.find(vector<int>()) != partitions.end())){
+        longestKey = vector<int>();
+    }
+    else{
+        //Find the longest queue
+        int longest = 0;
+
+        for(auto wordPairs:partitions){
+            if(wordPairs.second.size() > longest){
+                longest = wordPairs.second.size();
+                longestKey = wordPairs.first;
+            }
         }
     }
 
