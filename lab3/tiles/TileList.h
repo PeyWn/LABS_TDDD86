@@ -1,9 +1,3 @@
-// This is the .h file you will edit and turn in.
-// We have provided a skeleton for you,
-// but you must finish it as described in the spec.
-// Also remove these comments here and add your own, as well as on the members.
-// TODO: remove this comment header
-
 #ifndef TILELIST_H
 #define TILELIST_H
 
@@ -23,7 +17,8 @@ public:
     void removeAll(int x, int y);
 
 private:
-
+    int listSize;
+    Tile elements[];
 };
 
 #endif // TILELIST_H
