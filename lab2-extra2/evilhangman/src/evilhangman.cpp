@@ -13,7 +13,7 @@ const string FILENAME = "dictionary.txt";
 //Finds all positions of a character in a string
 vector<int> findAllLetters(string word, char letter);
 
-/* Replaces wordList with the biggest subset of words that are still possible after the given guess in hangman.
+/* Replaces wordList with the hardest to guess possible subset of words that are still possible after the given guess in hangman.
  * Returns the positions of the guessed char in the words in the subset.
  */
 vector<int> advanceWordList(char guess, vector<string> &wordList, set<char> &guesses);
@@ -27,10 +27,16 @@ void filterWordLength(int wordLength, vector<string> &wordList);
 //Inserts a dictionary from a file to the given que.
 void getDictionary(vector<string> &dict);
 
+/* Partitions a list of word based on the occurence and positions of the given letter.
+ * The position of the letter in the partition is the key of the map.
+ * The partitions are saved in the map partitions.
+*/
 void partitionWordList(char guess, vector<string> &wordList, map<vector<int>,vector<string>> &partitions);
 
+// Finds the vector from the map with the most elements. Returns the key to that element.
 vector<int> findLargestPartition(map<vector<int>,vector<string>> &partitions);
 
+// Removes all of the chars in the set from the gien string and returns a new, shorter string.
 string removeFromString(string alfa, set<char> &charsToRm);
 
 int main() {
