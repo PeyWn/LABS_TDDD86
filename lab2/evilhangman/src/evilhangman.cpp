@@ -68,7 +68,16 @@ int main() {
 
         string guess;
         while(play){    //This is the main game loop
-            cout << "Guesses left: " << guesses << endl << endl;
+            cout << "Guesses left: " << guesses << endl;
+            cout << "Guessed letters: ";
+
+            //Print all previously guessed letters
+            for(string oldGuess : guessedChars){
+                cout << " " << oldGuess;
+            }
+            cout << endl << endl;
+
+
             cout << guessedString << endl << endl;
 
             do{

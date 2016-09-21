@@ -139,20 +139,24 @@ vector<int> advanceWordList(char guess, vector<string> &wordList, set<char> &gue
     string loopChars = removeFromString(ALPHABET, guesses);
 
     int highScore = 0;
-    vector<int> highScoreKey;
+    vector<int> highScoreKey; // We only keep track of the partition with the highest score so far.
 
     for(auto partPair : partitions){
         int score = 0;
+
+        //Loop through all the possible guesses next step
         for(char c : loopChars){
             map<vector<int>,vector<string>> guessPartitions;
             partitionWordList(c, partPair.second, guessPartitions);
+
+            //Score is awarded based on largest partition in the next step for each letter(since this would with high probability be choosen)
             score += guessPartitions[findLargestPartition(guessPartitions)].size();
         }
+
         if(score > highScore){
             highScore = score;
             highScoreKey = partPair.first;
         }
-        cout << "Score: " << score  << " PartitionSize: " << partPair.second.size() << " Current HighScore: " << highScore << endl;
     }
 
     wordList = partitions[highScoreKey]; //Replace wordlist
