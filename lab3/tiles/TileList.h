@@ -17,8 +17,9 @@ public:
     void removeAll(int x, int y);
 
 private:
-    int listSize;
-    Tile elements[];
+    int size = 0;
+    int capacity = 10;
+    Tile* elements = new Tile[capacity];
 };
 
 #endif // TILELIST_H
