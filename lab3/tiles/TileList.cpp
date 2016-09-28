@@ -1,9 +1,3 @@
-// This is the .cpp file you will edit and turn in.
-// We have provided a skeleton for you,
-// but you must finish it as described in the spec.
-// Also remove these comments here and add your own.
-// TODO: remove this comment header
-
 #include "TileList.h"
 
 TileList::TileList(){}
@@ -33,14 +27,14 @@ void TileList::addTile(Tile tile)
 
 
 
-void TileList::drawAll(QGraphicsScene* scene)
+void TileList::drawAll(QGraphicsScene* scene) const
 {
     for(int i = 0; i < size; i++){
         elements[i].draw(scene);
     }
 }
 
-int TileList::indexOfTopTile(int x, int y)
+int TileList::indexOfTopTile(const int x, const int y) const
 {
     int tileI = -1;
 
@@ -53,7 +47,7 @@ int TileList::indexOfTopTile(int x, int y)
     return tileI;
 }
 
-void TileList::raise(int x, int y)
+void TileList::raise(const int x, const int y)
 {
     Tile targetTile;
 
@@ -71,7 +65,7 @@ void TileList::raise(int x, int y)
     }
 }
 
-void TileList::lower(int x, int y)
+void TileList::lower(const int x, const int y)
 {
     Tile targetTile;
     bool haveTargetTile = false;
@@ -91,20 +85,21 @@ void TileList::lower(int x, int y)
 
 }
 
-void TileList::remove(int x, int y)
+void TileList::remove(const int x, const int y)
 {
     for(int i = (size - 1); i >= 0; i--){
         if(elements[i].contains(x,y)){
             for(int j = (i + 1); j < size; j++){
                 elements[j - 1] = elements[j];
             }
+m
             size--;
             return;
         }
     }
 }
 
-void TileList::removeAll(int x, int y)
+void TileList::removeAll(const int x, const int y)
 {
     int offset = 0;
     for(int i = 0; i < size; i++){

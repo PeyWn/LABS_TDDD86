@@ -11,37 +11,112 @@
 
 Tour::Tour()
 {
-    // TODO: write this member
+
 }
 
 Tour::~Tour()
 {
-    // TODO: write this member
+    if(firstNode == 0){
+        return;
+    }
+
+    Node* curNode = firstNode;
+
+    do{
+        Node* nextNode = curNode->next;
+        delete curNode;
+
+        curNode = nextNode;
+    }while(curNode != firstNode);
 }
 
 void Tour::show()
 {
-    // TODO: write this member
+    if(firstNode == 0){
+        return;
+    }
+
+    Node* curNode = firstNode;
+
+    do{
+        cout << *firstNode << endl;
+
+        curNode = curNode->next;
+    }while(curNode != firstNode);
 }
 
 void Tour::draw(QGraphicsScene *scene)
 {
-    // TODO: write this member
+    if(firstNode == 0){
+        return;
+    }
+
+    Node* curNode = firstNode;
+
+    do{
+        curNode->point.drawTo(curNode->next->point, scene);
+
+        curNode = curNode->next;
+    }while(curNode != firstNode);
 }
 
 int Tour::size()
 {
-    // TODO: write this member
+    if(firstNode == 0){
+        return 0;
+    }
+
+    int pointC = 0;
+    Node* curNode = firstNode;
+
+    do{
+        pointC++;
+        curNode = curNode->next;
+    }while(curNode != firstNode);
+
+    return pointC;
 }
 
 double Tour::distance()
 {
-    // TODO: write this member
+    if(firstNode == 0){
+        return 0;
+    }
+
+    double curDist = 0;
+    Node* curNode = firstNode;
+
+    do{
+        curDist += curNode->point.distanceTo(curNode->next->point);
+
+        curNode = curNode->next;
+    }while(curNode != firstNode);
+
+    return curDist;
 }
 
 void Tour::insertNearest(Point p)
 {
-    // TODO: write this member
+    if(firstNode == nullptr){
+        firstNode = new Node(p);
+        firstNode->next = firstNode;
+        return;
+    }
+
+    Node* bestNode = firstNode;
+    Node* curNode = firstNode->next;
+
+
+    while(curNode != firstNode){
+        if(curNode->point.distanceTo(p) < bestNode->point.distanceTo(p)){
+            bestNode = curNode;
+        }
+
+        curNode = curNode->next;
+    }
+
+    bestNode->next = new Node(p, bestNode->next);
+
 }
 
 void Tour::insertSmallest(Point p)
