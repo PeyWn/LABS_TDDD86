@@ -42,12 +42,13 @@ int main(int argc, char *argv[]) {
     double y;
     while (input >> x >> y) {
         Point p(x, y);
-        tour.insertNearest(p);
+        tour.insertSmallest(p);
         //uncomment the 4 lines below to animate
-        //tour.draw(scene);
-        //std::chrono::milliseconds dura(50);
-        //std::this_thread::sleep_for(dura);
-        //a.processEvents();
+        scene->clear();
+        tour.draw(scene);
+        std::chrono::milliseconds dura(10);
+        std::this_thread::sleep_for(dura);
+        a.processEvents();
     }
     input.close();
 

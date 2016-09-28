@@ -4,6 +4,9 @@
 #include <QGraphicsScene>
 #include "Tile.h"
 
+/**
+ *  An ordered list to keep Tiles in.
+ */
 class TileList {
 public:
     /*
