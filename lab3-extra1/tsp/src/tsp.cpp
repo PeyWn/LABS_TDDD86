@@ -18,7 +18,7 @@
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
-    string filename = "germany15112.txt";
+    string filename = "tsp100.txt";
     ifstream input;
     input.open(filename);
 
@@ -51,6 +51,8 @@ int main(int argc, char *argv[]) {
         a.processEvents();
     }
     input.close();
+
+    tour.delCrossingLines();
 
     // print tour to standard output
     cout << "Tour distance: " << std::fixed << std::setprecision(4)

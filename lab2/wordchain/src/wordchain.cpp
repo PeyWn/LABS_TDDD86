@@ -11,8 +11,8 @@ using namespace std;
 const string ALPHABET  = "abcdefghijklmnopqrstuvwxyz";
 const string FILENAME = "dictionary.txt";
 
-/*Add words from a dictionary file to a given set.*/
-void getDictionary(set<string> &dict);
+/*Add words of a specific length from a dictionary file to a given set.*/
+void getDictionary(set<string> &dict, int wordLength);
 /*Prints words from stack to console.*/
 void printStack(stack<string> &words);
 /*Algorithm for finding the shourtest path from one word to an other, replacing one letter at a time only using words from the english language.*/
@@ -42,7 +42,7 @@ int main() {
 
 void findWordChain(string &w1, string &w2){
     set<string> dict;
-    getDictionary(dict);
+    getDictionary(dict, w1.length());
 
     queue<stack<string>> wordQueue;
     stack<string> w1Stack;
@@ -101,13 +101,15 @@ void printStack(stack<string> &words){
     cout << endl;
 }
 
-void getDictionary(set<string> &dict){
+void getDictionary(set<string> &dict, int wordLength){
     ifstream input;
     input.open(FILENAME);
     string word;
 
     while(input >> word){
-        dict.insert(word);
+        if(word.length() == wordLength){
+            dict.insert(word);
+        }
     }
     input.close();
 }
