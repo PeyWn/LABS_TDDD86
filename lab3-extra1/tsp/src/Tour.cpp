@@ -142,56 +142,58 @@ void Tour::insertSmallest(Point p)
 
 void Tour::delCrossingLines()
 {
+    cout << "Del crossing" << endl;
     if(firstNode == nullptr){
         return;
     }
 
-    Node* curNode = firstNode->next;
-    vector<Node*> curToCompNodes;
+    Node* curNode = firstNode;
 
-    while(curNode != firstNode){
+    do{
         cout << "curNode: " << curNode << endl;
 
         Node* compNode = curNode->next;
 
         while (compNode != curNode) {
-            cout << "compNode: " << compNode << " next: " << compNode->next << endl;
+            //cout << "compNode: " << compNode << " next: " << compNode->next << endl;
 
             /**
-            *Checks if a switch would result in a shourter route
+            *Checks if a switch would result in a shorter route
             */
-            if( (curNode->point.distanceTo(compNode->point) + curNode->next->point.distanceTo(compNode->next->point))
+            if((curNode->point.distanceTo(compNode->point) + curNode->next->point.distanceTo(compNode->next->point))
                  < (curNode->point.distanceTo(curNode->next->point) + compNode->point.distanceTo(compNode->next->point))){
+                //Do switch
+                cout << "DO SWITCH!" << endl;
+                vector<Node*> curToCompNodes;
 
                 //Add all points from curNode to compNode to a vector
-                Node* nodeAfterSwap = compNode->next;
-                Node* endOfLoop = compNode;
+                Node* compNext = compNode->next;
 
-                Node* vectorAdder = curNode->next;
-                do{
-                    cout << "add to vector: " << *vectorAdder << endl;
+                Node* vectorAdder = curNode->next->next;
+                while(vectorAdder != compNext){
+                    //cout << "add to vector: " << *vectorAdder << endl;
                     curToCompNodes.push_back(vectorAdder);
 
                     vectorAdder = vectorAdder->next;
-                }while(vectorAdder != endOfLoop);
+                }
 
-                curNode->next = compNode;
 
                 //Reverse the pointing direction of every node in curToCompnodes
-                for(int i = 0; i < curToCompNodes.size() - 1; i++){
+                for(int i = 0; i < curToCompNodes.size()- 1; i++){
                     curToCompNodes[i + 1]->next = curToCompNodes[i];
                 }
 
-                curToCompNodes[0]->next = nodeAfterSwap;
-                compNode = curToCompNodes[0];
+                curNode->next->next = compNext;
+                curNode->next = compNode;
+                compNode = compNext;
             }
 
             compNode = compNode->next;
         }
 
         curNode = curNode->next;
-        cout << "new curNode: " << *curNode << endl;
-    }
+
+    }while(curNode != firstNode);
 }
 
 

@@ -44,15 +44,14 @@ int main(int argc, char *argv[]) {
         Point p(x, y);
         tour.insertNearest(p);
         //uncomment the 4 lines below to animate
-        //scene->clear();
-        //tour.draw(scene);
-        //std::chrono::milliseconds dura(10);
-        //std::this_thread::sleep_for(dura);
+        scene->clear();
+        tour.draw(scene);
+        tour.delCrossingLines();
+        std::chrono::milliseconds dura(4000);
+        std::this_thread::sleep_for(dura);
         a.processEvents();
     }
     input.close();
-
-    tour.delCrossingLines();
 
     // print tour to standard output
     cout << "Tour distance: " << std::fixed << std::setprecision(4)
