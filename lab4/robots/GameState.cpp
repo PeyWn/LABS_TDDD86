@@ -14,7 +14,7 @@ GameState::GameState(int numberOfRobots) {
         Robot robot;
         do {robot = Robot();}
         while (!isEmpty (robot));
-        robots.push_back(robot);
+        robots.push_back(&robot);
     }
     teleportHero();
 }
@@ -22,9 +22,7 @@ GameState::GameState(int numberOfRobots) {
 void GameState::draw(QGraphicsScene *scene) const {
     scene->clear();
     for (size_t i = 0; i < robots.size(); ++i)
-        robots[i].draw(scene);
-    for (size_t i = 0; i < junks.size(); ++i)
-        junks[i].draw(scene);
+        robots[i]->draw(scene);
     hero.draw(scene);
 }
 
@@ -35,7 +33,9 @@ void GameState::teleportHero() {
 
 void GameState::moveRobots() {
     for (unsigned int i = 0; i < robots.size(); i++)
-        robots[i].moveTowards (hero);
+        if (!robots[i]->isJunk()){
+            robots[i]->moveTowards (hero);
+        }
 }
 
 int GameState::countCollisions() {
@@ -79,16 +79,7 @@ Hero GameState::getHero() const {return hero;}
  * Free of robots and junk only
  */
 bool GameState::isEmpty(const Unit& unit) const {
-    return (countRobotsAt(unit) == 0 && !junkAt(unit));
-}
-
-/*
- * Is there junk at unit?
- */
-bool GameState::junkAt(const Unit& unit) const {
-    for (size_t i = 0; i < junks.size(); ++i)
-        if (junks[i].at(unit)) return true;
-    return false;
+    return countRobotsAt(unit) == 0;
 }
 
 /*

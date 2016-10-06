@@ -20,3 +20,7 @@ void Junk::moveTowards(const Unit& u){}
 bool Junk::attacks(const Unit& u) const{
     return false;
 }
+
+bool Junk::isJunk() const{
+    return true;
+}

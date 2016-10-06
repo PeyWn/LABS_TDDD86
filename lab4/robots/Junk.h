@@ -12,7 +12,7 @@
 class Junk : public Robot {
 public:
     Junk();
-    Junk(Unit c);
+    Junk(Robot c);
 
     /*
     * Draws this junk onto the given QGraphicsScene.
@@ -22,6 +22,8 @@ public:
     void moveTowards(const Unit& u) override;
 
     bool attacks(const Unit& u) const override;
+
+    bool isJunk() const override;
 };
 
 #endif // JUNK_H
