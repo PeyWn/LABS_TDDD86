@@ -22,34 +22,34 @@ public:
     /**
      * Prints the coordinates of all points in the tour to the console.
      */
-    void show();
+    void show() const;
 
     /**
      * Draw the tour on the given scene.
      */
-    void draw(QGraphicsScene* scene);
+    void draw(QGraphicsScene* scene) const;
 
     /**
      *  Returns the number of points in the tour.
      */
-    int size();
+    int size() const;
 
     /**
      *  Returns the distance of the tour.
      */
-    double distance();
+    double distance() const;
 
     /**
      * Inserts the point p into the Tour.
      * P is inserted after the closest point in the existing tour.
      */
-    void insertNearest(Point p);
+    void insertNearest(const Point p);
 
     /**
      * Inserts the point p into the Tour.
      * P is inserted where it adds the least distance to the tour.
      */
-    void insertSmallest(Point p);
+    void insertSmallest(const Point p);
 
 private:
     Node* firstNode = nullptr;

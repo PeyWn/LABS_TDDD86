@@ -34,67 +34,66 @@ void TileList::drawAll(QGraphicsScene* scene) const
 
 int TileList::indexOfTopTile(const int x, const int y) const
 {
-    int tileI = -1;
-
-    for(int i = 0; i < size; i++){
+    for(int i = (size - 1); i >= 0; i--){
         if (elements[i].contains(x, y)){
-            tileI = i;
+            return i;
         }
     }
 
-    return tileI;
+    return -1;
 }
 
 void TileList::raise(const int x, const int y)
 {
     Tile targetTile;
 
-    for(int i = (size - 1); i >= 0; i--){
-        if(elements[i].contains(x,y)){
-            targetTile = elements[i];
+    int targetI = indexOfTopTile(x, y);
 
-            for(int j = (i + 1); j < size; j++){
-                elements[j - 1] = elements[j];
-            }
-
-            elements[size - 1] = targetTile;
-            return;
-        }
+    if(targetI == -1){
+        return;
     }
+
+    targetTile = elements[targetI];
+
+    for(int j = (targetI + 1); j < size; j++){
+        elements[j - 1] = elements[j];
+    }
+
+    elements[size - 1] = targetTile;
 }
 
 void TileList::lower(const int x, const int y)
 {
     Tile targetTile;
-    bool haveTargetTile = false;
 
-    for(int i = size-1; i >= 0; i--){
-        if (haveTargetTile){
-            elements[i+1] = elements[i];
-        }
-        else if(elements[i].contains(x,y)){
-            targetTile = elements[i];
-            haveTargetTile = true;
-        }
-    }
-    if (haveTargetTile){
-        elements[0] = targetTile;
+    int targetI = indexOfTopTile(x, y);
+
+    if(targetI == -1){
+        return;
     }
 
+    targetTile = elements[targetI];
+
+    for(int i = targetI; i > 0; i--){
+            elements[i] = elements[i-1];
+    }
+    elements[0] = targetTile;
 }
 
 void TileList::remove(const int x, const int y)
 {
-    for(int i = (size - 1); i >= 0; i--){
-        if(elements[i].contains(x,y)){
-            for(int j = (i + 1); j < size; j++){
-                elements[j - 1] = elements[j];
-            }
+    int targetI = indexOfTopTile(x, y);
 
-            size--;
-            return;
-        }
+    if(targetI == -1){
+        return;
     }
+
+    for(int j = (targetI + 1); j < size; j++){
+        elements[j - 1] = elements[j];
+    }
+
+    size--;
+    return;
 }
 
 void TileList::removeAll(const int x, const int y)
