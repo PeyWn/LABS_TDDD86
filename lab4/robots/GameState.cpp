@@ -11,18 +11,45 @@ GameState::GameState(){}
 
 GameState::GameState(int numberOfRobots) {
     for (int i = 0; i < numberOfRobots; i++) {
-        Robot robot;
-        do {robot = Robot();}
-        while (!isEmpty (robot));
-        robots.push_back(&robot);
+        Robot* robot;
+        bool badPlacement = false;
+        do{
+            robot = new Robot();
+            badPlacement = !isEmpty(*robot);
+
+            if(badPlacement){
+                delete robot;
+            }
+        }while (badPlacement);
+
+        robots.push_back(robot);
     }
     teleportHero();
 }
 
+GameState::~GameState(){
+    int robotCount = robots.size();
+
+    for(int i = 0; i < robotCount; i++){
+        delete robots[i];
+        robots.pop_back();
+    }
+}
+
+GameState::GameState(const GameState& other){
+    copy(other);
+}
+
+GameState& GameState::operator=(const GameState& other){
+    copy(other);
+    return *this;
+}
+
 void GameState::draw(QGraphicsScene *scene) const {
     scene->clear();
-    for (size_t i = 0; i < robots.size(); ++i)
+    for (size_t i = 0; i < robots.size(); ++i){
         robots[i]->draw(scene);
+    }
     hero.draw(scene);
 }
 
@@ -42,12 +69,10 @@ int GameState::countCollisions() {
     int numberDestroyed = 0;
     unsigned int i = 0;
     while (i < robots.size()) {
-        bool hitJunk = junkAt (robots[i]);
-        bool collision = (countRobotsAt (robots[i]) > 1);
-        if (hitJunk || collision) {
-            if (!hitJunk) junks.push_back (Junk(robots[i]));
-            robots[i] = robots[robots.size()-1];
-            robots.pop_back();
+        if ((countRobotsAt (*robots[i]) > 1) && (!robots[i]->isJunk()) ) {
+            Robot* oldRobot = robots[i];
+            robots[i] = new Junk(*oldRobot);
+            delete oldRobot;
             numberDestroyed++;
         } else i++;
     }
@@ -55,7 +80,15 @@ int GameState::countCollisions() {
 }
 
 bool GameState::anyRobotsLeft() const {
-    return (robots.size() != 0);
+    int count = 0;
+
+    for(Robot* r : robots){
+        if(!r->isJunk()){
+            count++;
+        }
+    }
+
+    return (count != 0);
 }
 
 bool GameState::heroDead() const {
@@ -64,8 +97,12 @@ bool GameState::heroDead() const {
 
 bool GameState::isSafe(const Unit& unit) const {
     for (unsigned int i = 0; i < robots.size(); i++)
-        if (robots[i].attacks(unit)) return false;
-    if (junkAt(unit)) return false;
+        if (robots[i]->isJunk() && robots[i]->at(unit)){
+            return false;
+        }
+        else if(robots[i]->attacks(unit)){
+            return false;
+        }
     return true;
 }
 
@@ -87,9 +124,28 @@ bool GameState::isEmpty(const Unit& unit) const {
  */
 int GameState::countRobotsAt(const Unit& unit) const {
     int count = 0;
-    for (size_t i = 0; i < robots.size(); ++i) {
-        if (robots[i].at(unit))
+    for (int i = 0; i < robots.size(); i++) {
+        if (robots[i]->at(unit)){
             count++;
+        }
     }
     return count;
+}
+/*
+ * Copy all values from one GameState to this.
+ */
+
+void GameState::copy(const GameState& other){
+    hero = other.getHero();
+
+    int robotCount = robots.size();
+    for(int i = (robotCount - 1); i >= 0; i--){
+        delete robots[i];
+        robots.pop_back();
+    }
+
+    for(int i = 0; i < other.robots.size(); i++){
+        Robot* robot = new Robot(*(other.robots[i]));
+        robots.push_back(robot);
+    }
 }
