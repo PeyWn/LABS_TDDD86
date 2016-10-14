@@ -135,10 +135,11 @@ void MainWindow::keyPressEvent(QKeyEvent *e)
  * Try to move hero to unit
  */
 bool MainWindow::tryMove(Hero hero, const Point& point) {
+    Robot robot = Robot(point);
     if (!outsideBorder(point)) {
-        hero.moveTowards(point);
+        hero.moveTowards(robot);
         if (gameState.isSafe(hero)) {
-            gameState.moveHeroTowards(point);
+            gameState.moveHeroTowards(robot);
             return true;
         }
     }

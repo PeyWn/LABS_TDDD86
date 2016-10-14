@@ -12,7 +12,8 @@
 class Robot : public Unit {
 public:
     Robot();
-    Robot(Unit& c);
+    Robot(const Unit& c);
+    Robot(const Point& p);
 
     /*
     * Can I catch u in one move?
@@ -21,6 +22,9 @@ public:
 
     virtual void draw(QGraphicsScene* scene) const;
 
+    /*
+     * Checks if object is junk
+     */
     virtual bool isJunk() const;
 };
 

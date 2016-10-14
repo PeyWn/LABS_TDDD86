@@ -16,7 +16,6 @@ class Unit {
 public:
     Unit();
     Unit(const Unit& u);
-    Unit(const Point& p);
 
     /*
     * Return Point representation of Unit
@@ -46,7 +45,10 @@ public:
 
     virtual void draw(QGraphicsScene* scene) const = 0;
 
-private:
+    int getX() const;
+    int getY() const;
+
+protected:
     int x;  // x position of this unit
     int y;  // y position of this unit
 

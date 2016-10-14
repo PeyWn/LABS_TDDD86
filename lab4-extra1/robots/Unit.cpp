@@ -20,10 +20,6 @@ Unit::Unit(const Unit& u) {
     y = u.y;
 }
 
-Unit::Unit(const Point& p) {
-    x = p.x;
-    y = p.y;
-}
 
 Point Unit::asPoint() const {
     return Point{x, y};
@@ -54,6 +50,14 @@ double Unit::distanceTo(const Unit& u) const {
 
 void Unit::draw(QGraphicsScene* scene) const{
 
+}
+
+int Unit::getX() const{
+    return x;
+}
+
+int Unit::getY() const{
+    return y;
 }
 
 /*

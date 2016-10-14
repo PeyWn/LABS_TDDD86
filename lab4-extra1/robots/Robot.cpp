@@ -7,14 +7,19 @@
 #include "constants.h"
 
 Robot::Robot() : Unit() {}
-Robot::Robot(Unit c) : Unit(c){}
+Robot::Robot(const Unit& c) : Unit(c){}
 
-bool Robot::attacks(const Unit& u) const {
-    return (abs(x - u.x) <= 1 &&
-            abs(y - u.y) <= 1);
+Robot::Robot(const Point& p) : Unit(){
+    x = p.x;
+    y = p.y;
 }
 
-virtual void Robot::draw(QGraphicsScene *scene) const {
+bool Robot::attacks(const Unit& u) const {
+    return (abs(x - u.getX()) <= 1 &&
+            abs(y - u.getY()) <= 1);
+}
+
+void Robot::draw(QGraphicsScene *scene) const {
     Point corner = asPoint();
     scene->addEllipse(QRectF(corner.x * UNIT_WIDTH, corner.y * UNIT_HEIGHT,
                              JUNK_RADIUS, JUNK_RADIUS), QPen(), QBrush(ROBOT_COLOR));
