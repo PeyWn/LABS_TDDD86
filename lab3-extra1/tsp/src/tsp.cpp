@@ -46,6 +46,7 @@ int main(int argc, char *argv[]) {
         //uncomment the 4 lines below to animate
         scene->clear();
         tour.draw(scene);
+        cout << tour.size() << endl;
         tour.delCrossingLines();
         std::chrono::milliseconds dura(4000);
         std::this_thread::sleep_for(dura);

@@ -155,7 +155,7 @@ void Tour::delCrossingLines()
         Node* compNode = curNode->next;
 
         while (compNode != curNode) {
-            //cout << "compNode: " << compNode << " next: " << compNode->next << endl;
+            cout << "compNode: " << compNode << " next: " << compNode->next << endl;
 
             /**
             *Checks if a switch would result in a shorter route
@@ -164,6 +164,7 @@ void Tour::delCrossingLines()
                  < (curNode->point.distanceTo(curNode->next->point) + compNode->point.distanceTo(compNode->next->point))){
                 //Do switch
                 cout << "DO SWITCH!" << endl;
+                /*
                 vector<Node*> curToCompNodes;
 
                 //Add all points from curNode to compNode to a vector
@@ -186,6 +187,7 @@ void Tour::delCrossingLines()
                 curNode->next->next = compNext;
                 curNode->next = compNode;
                 compNode = compNext;
+                */
             }
 
             compNode = compNode->next;
