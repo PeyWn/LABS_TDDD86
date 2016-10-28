@@ -28,9 +28,7 @@ GameState::GameState(int numberOfRobots) {
 }
 
 GameState::~GameState(){
-    int robotCount = robots.size();
-
-    for(int i = 0; i < robotCount; i++){
+    for(int i = (robots.size() - 1); i >= 0; i--){
         delete robots[i];
         robots.pop_back();
     }
@@ -138,14 +136,17 @@ int GameState::countRobotsAt(const Unit& unit) const {
 void GameState::copy(const GameState& other){
     hero = other.getHero();
 
-    int robotCount = robots.size();
-    for(int i = (robotCount - 1); i >= 0; i--){
+    for(int i = (robots.size() - 1); i >= 0; i--){
         delete robots[i];
         robots.pop_back();
     }
 
     for(int i = 0; i < other.robots.size(); i++){
-        Robot* robot = new Robot(*(other.robots[i]));
-        robots.push_back(robot);
+        if(other.robots[i]->isJunk()){
+            robots.push_back(new Junk(*(other.robots[i])));
+        }
+        else{
+            robots.push_back(new Robot(*(other.robots[i])));
+        }
     }
 }

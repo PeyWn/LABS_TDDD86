@@ -1,0 +1,218 @@
+/*
+ * File: main.h
+ * ------------
+ * This file renames the <code>main</code> method in the client's
+ * program to <code>Main</code>, thereby allowing a custom
+ * <code>main</code> method in the libraries to take control
+ * before passing control back to the client program.  The main macro
+ * also defines a function getMainFlags that returns an int whose bits
+ * indicate which of the various interfaces have been loaded by this
+ * definition of main.
+ *
+ * Note: This file can be loaded more than once and must therefore
+ * check to see what has already been defined.
+ */
+
+#ifdef main
+#  undef main
+#  undef CONSOLE_FLAG
+#  undef GRAPHICS_FLAG
+#else
+#  define MAIN_USES_CONSOLE (1<<0)
+#  define MAIN_USES_GRAPHICS (1<<1)
+#endif
+
+#ifdef _console_h
+#  define CONSOLE_FLAG MAIN_USES_CONSOLE
+#else
+#  define CONSOLE_FLAG 0
+#endif
+
+#ifdef _gwindow_h
+#  define GRAPHICS_FLAG MAIN_USES_GRAPHICS
+#else
+#  define GRAPHICS_FLAG 0
+#endif
+
+#if CONSOLE_FLAG | GRAPHICS_FLAG
+
+#define main main(int argc, char **argv) { \
+                extern int _mainFlags; \
+                _mainFlags = GRAPHICS_FLAG + CONSOLE_FLAG; \
+                try { \
+                   return startupMain(argc, argv); \
+                } catch (const std::exception& ex) { \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** An exception occurred during program execution: \n"; \
+                   msg += " *** "; \
+                   msg += ex.what(); \
+                   msg += "\n ***\n\n"; \
+                   std::cerr << msg; \
+                   throw ex; \
+                } catch (std::string str) { \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** A string exception occurred during program execution: \n"; \
+                   msg += " *** \""; \
+                   msg += str; \
+                   msg += "\"\n ***\n"; \
+                   std::cerr << msg; \
+                   throw str; \
+                } catch (char const* str) { \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** A string exception occurred during program execution: \n"; \
+                   msg += " *** \""; \
+                   msg += str; \
+                   msg += "\"\n ***\n"; \
+                   std::cerr << msg; \
+                   throw str; \
+                } catch (int n) { \
+                   char buf[128]; \
+                   snprintf(buf, 128, "%d", n); \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** An int exception occurred during program execution: \n"; \
+                   msg += " *** "; \
+                   msg += buf; \
+                   msg += "\n ***\n\n"; \
+                   std::cerr << msg; \
+                   throw n; \
+                } catch (long l) { \
+                   char buf[128]; \
+                   snprintf(buf, 128, "%ld", l); \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** A long exception occurred during program execution: \n"; \
+                   msg += " *** "; \
+                   msg += buf; \
+                   msg += "\n ***\n\n"; \
+                   std::cerr << msg; \
+                   throw l; \
+                } catch (char c) { \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** A char exception occurred during program execution: \n"; \
+                   msg += " *** '"; \
+                   msg += c; \
+                   msg += "'\n ***\n"; \
+                   std::cerr << msg; \
+                   throw c; \
+                } catch (bool b) { \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** A bool exception occurred during program execution: \n"; \
+                   msg += " *** "; \
+                   msg += (b ? "true" : "false"); \
+                   msg += "\n ***\n\n"; \
+                   std::cerr << msg; \
+                   throw b; \
+                } catch (double d) { \
+                   char buf[128]; \
+                   snprintf(buf, 128, "%lf", d); \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** A double exception occurred during program execution: \n"; \
+                   msg += " *** "; \
+                   msg += buf; \
+                   msg += "\n ***\n\n"; \
+                   std::cerr << msg; \
+                   throw d; \
+                } \
+             } \
+             int Main
+
+extern int startupMain(int argc, char **argv);
+
+#else
+
+#define main main(int argc, char **argv) { \
+                extern int _mainFlags; \
+                _mainFlags = GRAPHICS_FLAG + CONSOLE_FLAG; \
+                try { \
+                   return mainWrapper(argc, argv); } \
+                } catch (const std::exception& ex) { \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** An exception occurred during program execution: \n"; \
+                   msg += " *** "; \
+                   msg += ex.what(); \
+                   msg += "\n ***\n\n"; \
+                   std::cerr << msg; \
+                   throw ex; \
+                } catch (std::string str) { \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** A string exception occurred during program execution: \n"; \
+                   msg += " *** \""; \
+                   msg += str; \
+                   msg += "\"\n ***\n"; \
+                   std::cerr << msg; \
+                   throw str; \
+                } catch (char const* str) { \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** A string exception occurred during program execution: \n"; \
+                   msg += " *** \""; \
+                   msg += str; \
+                   msg += "\"\n ***\n"; \
+                   std::cerr << msg; \
+                   throw str; \
+                } catch (int n) { \
+                   char buf[128]; \
+                   snprintf(buf, 128, "%d", n); \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** An int exception occurred during program execution: \n"; \
+                   msg += " *** "; \
+                   msg += buf; \
+                   msg += "\n ***\n\n"; \
+                   std::cerr << msg; \
+                   throw n; \
+                } catch (long l) { \
+                   char buf[128]; \
+                   snprintf(buf, 128, "%ld", l); \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** A long exception occurred during program execution: \n"; \
+                   msg += " *** "; \
+                   msg += buf; \
+                   msg += "\n ***\n\n"; \
+                   std::cerr << msg; \
+                   throw l; \
+                } catch (char c) { \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** A char exception occurred during program execution: \n"; \
+                   msg += " *** '"; \
+                   msg += c; \
+                   msg += "'\n ***\n"; \
+                   std::cerr << msg; \
+                   throw c; \
+                } catch (bool b) { \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** A bool exception occurred during program execution: \n"; \
+                   msg += " *** "; \
+                   msg += (b ? "true" : "false"); \
+                   msg += "\n ***\n\n"; \
+                   std::cerr << msg; \
+                   throw b; \
+                } catch (double d) { \
+                   char buf[128]; \
+                   snprintf(buf, 128, "%lf", d); \
+                   string msg = "\n ***\n"; \
+                   msg += " *** STANFORD C++ LIBRARY \n"; \
+                   msg += " *** A double exception occurred during program execution: \n"; \
+                   msg += " *** "; \
+                   msg += buf; \
+                   msg += "\n ***\n\n"; \
+                   std::cerr << msg; \
+                   throw d; \
+                } \
+             int Main
+
+extern int mainWrapper(int argc, char **argv);
+
+#endif
