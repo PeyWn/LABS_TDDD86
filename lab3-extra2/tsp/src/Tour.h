@@ -39,9 +39,14 @@ public:
      */
     double distance() const;
 
+    /**
+     * Inserts all the points from the given list into the tour.
+     */
     void farthestInsertion(list<Point>& points);
 
 private:
+    void removeFirstPoint(const Point& value, list<Point>& points);
+
     Node* firstNode = nullptr;
 };
 

@@ -2,6 +2,7 @@
 #include "Tour.h"
 #include "Node.h"
 #include "Point.h"
+#include <QApplication>
 
 Tour::Tour(){}
 
@@ -86,31 +87,75 @@ double Tour::distance() const
     return curDist;
 }
 
-void Tour::farthestInsertion(list<Point>& points)
-{
-    int farthestWay = 0;
+void Tour::farthestInsertion(list<Point>& points){
+    double farthestWay = 0;
     Point* point1 = 0;
     Point* point2 = 0;
 
     //Find the two points farthest away from each other. O(n²)
     for(auto pointA : points){
         for(auto pointB : points){
-            int curDist = pointA.distanceTo(pointB);
+            double curDist = pointA.distanceTo(pointB);
+
             if(curDist > farthestWay){
                 farthestWay = curDist;
-                point1 = &pointA;
-                point2 = &pointB;
+                point1 = new Point(pointA);
+                point2 = new Point(pointB);
             }
         }
     }
 
-    firstNode = new Node(point1);
-    Node* secondNode = new Node(point2, firstNode);
-    FirstNode->next = secondNode;
+    firstNode = new Node(*point1);
+    Node* secondNode = new Node(*point2, firstNode);
+    firstNode->next = secondNode;
 
     //Remove point 1 and 2
-    points.remove(*point1);
-    points.remove(*point2);
+    removeFirstPoint(*point1, points);
+    removeFirstPoint(*point2, points);
+
+    //Insert rest of points
+    while(!points.empty()){
+        Point* farthestPoint;
+        Node* insertNode; //Where in tour farthesPoint should be inserted
+        double farthestLength = 0;
+
+        for(auto point: points){
+            Node* curInsertNode = firstNode;
+            double shortPath = (firstNode->point.distanceTo(point) + firstNode->next->point.distanceTo(point));
+            Node* tourPointer = firstNode->next;
+
+            while(tourPointer != firstNode){
+                double curDelta = (tourPointer->point.distanceTo(point) + tourPointer->next->point.distanceTo(point));
+
+                if(curDelta < shortPath){
+                    shortPath = curDelta;
+                    curInsertNode = tourPointer;
+                }
+                tourPointer = tourPointer->next;
+            }
+
+            if(shortPath > farthestLength){
+                farthestLength = shortPath;
+                farthestPoint = new Point(point);
+                insertNode = curInsertNode;
+            }
+        }
+
+        //Insert the farthest point
+        Node* newNode = new Node(*farthestPoint, insertNode->next);
+        insertNode->next = newNode;
+
+        removeFirstPoint(*farthestPoint, points);
+    }
+}
+
+void Tour::removeFirstPoint(const Point& value, list<Point>& points){
+    for(auto it = points.begin(); it != points.end(); it++){
+        if(value.x == it->x && value.y == it->y){
+            points.erase(it);
+            return;
+        }
+    }
 }
 
 
