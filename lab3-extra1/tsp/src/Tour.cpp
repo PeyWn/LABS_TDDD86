@@ -164,7 +164,7 @@ void Tour::delCrossingLines()
                  < (curNode->point.distanceTo(curNode->next->point) + compNode->point.distanceTo(compNode->next->point))){
                 //Do switch
                 cout << "DO SWITCH!" << endl;
-                /*
+
                 vector<Node*> curToCompNodes;
 
                 //Add all points from curNode to compNode to a vector
@@ -178,7 +178,6 @@ void Tour::delCrossingLines()
                     vectorAdder = vectorAdder->next;
                 }
 
-
                 //Reverse the pointing direction of every node in curToCompnodes
                 for(int i = 0; i < curToCompNodes.size()- 1; i++){
                     curToCompNodes[i + 1]->next = curToCompNodes[i];
@@ -187,7 +186,6 @@ void Tour::delCrossingLines()
                 curNode->next->next = compNext;
                 curNode->next = compNode;
                 compNode = compNext;
-                */
             }
 
             compNode = compNode->next;
