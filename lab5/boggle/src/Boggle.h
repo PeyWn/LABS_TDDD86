@@ -9,6 +9,9 @@
 
 #include <iostream>
 #include <string>
+#include <grid.h>
+#include <lexicon.h>
+#include <set>
 // TODO: include any other header files you need
 
 using namespace std;
@@ -19,11 +22,38 @@ public:
     const int MIN_WORD_LENGTH = 4;
     const int BOARD_SIZE = 4;
 
-    // TODO: decide the public member functions and declare them
+    Boggle();
 
+    void resetBoard();
+    void resetBoard(string& letters);
+
+    bool wordInDict(const string& word) const;
+    bool longEnough(const string& word) const;
+    bool isPlayed(const string& word) const;
+    bool wordInBoard(const string& word) const;
+    int getPlayerScore() const;
+    int getComputerrScore() const;
+    set<string> getPlayerWords() const;
+    set<string> getComputerWords() const;
+
+    vector<string> findAllWords() const;
+
+    void playerFoundWord(const string& word);
+    void computerFoundWord(const string& word);
+
+    string boardToString() const;
 private:
-    // TODO: decide the private member variables/functions and declare them
+    Lexicon wordList;
+    int playerScore;
+    int computerScore;
+    set<string> playerWords;
+    set<string> computerWords;
+    Grid<char> board;
 
+    bool findWord(const string& word, const int col, const int row, vector<int*> visited) const;
+    int getScore(const string& word) const;
+    void resetValues();
+    bool coordsInVector(const int col, const int row, vector<int*>& coordinates) const;
 };
 
 #endif
