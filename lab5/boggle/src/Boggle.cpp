@@ -1,9 +1,3 @@
-// This is the .cpp file you will edit and turn in.
-// We have provided a minimal skeleton for you,
-// but you must finish it as described in the spec.
-// Also remove these comments here and add your own.
-// TODO: remove this comment header and replace it with your own
-
 #include <sstream>
 #include "Boggle.h"
 #include "random.h"
@@ -11,13 +5,13 @@
 #include "strlib.h"
 #include <algorithm>
 
-
+//Deltas for neighbors of a coordinate
 static const int deltaC = 8;
 static const int deltas[][2] = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
 
 static const int NUM_CUBES = 16;   // the number of cubes in the game
 static const int CUBE_SIDES = 6;   // the number of sides on each cube
-static string CUBES[NUM_CUBES] = {        // the letters on all 6 sides of every cube
+static string CUBES[NUM_CUBES] = {  // the letters on all 6 sides of every cube
    "AAEEGN", "ABBJOO", "ACHOPS", "AFFKPS",
    "AOOTTW", "CIMOTU", "DEILRX", "DELRVY",
    "DISTTY", "EEGHNW", "EEINSU", "EHRTVW",
@@ -67,7 +61,7 @@ bool Boggle::wordInBoard(const string& word) const{
         for(int row = 0; row < BOARD_SIZE; row++){
             vector<int*> newVec;
             if(findWord(word, col, row, newVec)){
-                return false;
+                return true;
             }
         }
     }
@@ -76,7 +70,25 @@ bool Boggle::wordInBoard(const string& word) const{
 }
 
 vector<string> Boggle::findAllWords() const{
-    //TODO Algorithm
+    vector<string> words;
+    for(int col = 0; col < BOARD_SIZE; col++){
+        vector<int*> newVec;
+        for(int row = 0; row < BOARD_SIZE; row++){
+            traverseBoard(col, row, "", newVec, words);
+        }
+    }
+    return words;
+}
+
+void Boggle::computerFindWords() {
+    vector<string> allWords = findAllWords();
+
+    for(auto word : allWords){
+        if(playerWords.find(word) == playerWords.end()){
+            computerWords.insert(word);
+            computerScore += getScore(word);
+        }
+    }
 }
 
 int Boggle::getPlayerScore()const {
@@ -85,22 +97,18 @@ int Boggle::getPlayerScore()const {
 int Boggle::getComputerrScore()const {
     return computerScore;
 }
-set<string> Boggle::getPlayerWords()const {
+set<string> Boggle::getPlayerWords() const {
     return playerWords;
 }
-set<string> Boggle::getComputerWords()const {
+set<string> Boggle::getComputerWords() const {
     return computerWords;
 }
 
 void Boggle::playerFoundWord(const string& word){
     playerScore += getScore(word);
     playerWords.insert(word);
+}
 
-}
-void Boggle::computerFoundWord(const string& word){
-    computerScore += getScore(word);
-    computerWords.insert(word);
-}
 
 string Boggle::boardToString() const{
     ostringstream os;
@@ -115,7 +123,30 @@ string Boggle::boardToString() const{
 }
 
 
+void Boggle::traverseBoard(const int col, const int row, const string prefix, vector<int*> visited, vector<string> &foundWords) const{
+    string newPrefix = prefix + board.get(row, col);
+    if(!wordList.containsPrefix(newPrefix)){
+        return;
+    }
 
+    if(longEnough(newPrefix) && wordList.contains(newPrefix)){
+        insertUnique(newPrefix, foundWords);
+    }
+
+    int newCoords[] = {col, row};
+    visited.push_back(newCoords);
+
+    for(int i = 0; i < deltaC; i++){
+        int newRow = row + deltas[i][0];
+        int newCol = col + deltas[i][1];
+
+        if(board.inBounds(newRow, newCol)
+                && !coordsInVector(newCol, newRow, visited)){
+            traverseBoard(newCol, newRow, newPrefix, visited, foundWords);
+        }
+    }
+
+}
 
 bool Boggle::findWord(const string& word, const int col, const int row, vector<int*> visited) const{
     if(word.length()==0){
@@ -133,7 +164,7 @@ bool Boggle::findWord(const string& word, const int col, const int row, vector<i
             int newCol = col + deltas[i][1];
 
             if(board.inBounds(newRow, newCol) &&
-                    coordsInVector(newCol, newRow, visited) &&
+                    !coordsInVector(newCol, newRow, visited) &&
                     findWord(word.substr(1, word.npos), newCol, newRow, visited)){
                 return true;
             }
@@ -146,6 +177,7 @@ bool Boggle::findWord(const string& word, const int col, const int row, vector<i
 int Boggle::getScore(const string& word) const{
     return word.length()-BOARD_SIZE+1;
 }
+
 void Boggle::resetValues(){
     playerScore = 0;
     computerScore = 0;
@@ -163,4 +195,8 @@ bool Boggle::coordsInVector(const int col, const int row, vector<int*>& coordina
     return false;
 }
 
-// TODO: implement the members you declared in Boggle.h
+void Boggle::insertUnique(const string word, vector<string> &wordList) const{
+    if(find(wordList.begin(), wordList.end(), word) == wordList.end()){
+        wordList.push_back(word);
+    }
+}
