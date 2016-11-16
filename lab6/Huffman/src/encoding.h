@@ -31,4 +31,5 @@ void decompress(ibitstream& input, ostream& output);
 void freeTree(HuffmanNode* node);
 void writeHeader(map<int, int> &freqTable, ostream& output);
 HuffmanNode* readHeader(ibitstream& input);
+bool comparePointers(HuffmanNode* n1, HuffmanNode* n2);
 #endif
