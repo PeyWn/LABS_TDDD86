@@ -32,13 +32,21 @@ void freeTree(HuffmanNode* node);
 /**
  * Writes a header for the Huffman encoding the given output stream.
  */
-void writeHeader(map<int, int> &freqTable, ostream& output);
+void writeHeader(HuffmanNode* root, obitstream& output);
 
 /**
  * Reads a header for a huffman encoding from the input stream.
  * Uses the header to construct and return an encoding tree.
  */
 HuffmanNode* readHeader(ibitstream& input);
+
+void writeHeaderRec(HuffmanNode* root, obitstream& output, bool& zeroFound, int& EOFplace);
+
+HuffmanNode* readHeaderRec(ibitstream& input, HuffmanNode* zero1, HuffmanNode* zero2);
+
+void writeNext8bits(const int ascii, obitstream& output);
+
+int readNext8Bits(ibitstream& input);
 
 /*
  * Utility function to be able to compare HUffmmanNode-pointers using comparison from HuffmanNode

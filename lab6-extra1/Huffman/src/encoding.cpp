@@ -1,6 +1,7 @@
 #include "encoding.h"
 #include <queue>
 #include <functional>
+#include <bitset>
 
 /*
  * Builds a table with char and occurance
@@ -130,7 +131,7 @@ void compress(istream& input, obitstream& output) {
     auto tree = buildEncodingTree(freq);
     auto table = buildEncodingMap(tree);
 
-    writeHeader(freq, output);
+    writeHeader(tree, output);
 
     input.clear();
     input.seekg(0, ios::beg);
@@ -164,24 +165,18 @@ void freeTree(HuffmanNode* node){
     delete node;
 }
 
+
 /**
  * Writes a header for the Huffman encoding the given output stream.
  */
-void writeHeader(map<int, int> &freqTable, ostream& output){
-   output << "{";
+void writeHeader(HuffmanNode* root, obitstream& output){
+    bool zeroFound = false;
+    int EOFplace = 0; //0 = first, 1 = second
 
-   int first = true;
-   for(auto freq: freqTable){
-       if(!first){
-           output << ", ";
-       }
+    writeHeaderRec(root, output, zeroFound, EOFplace);
 
-       first = false;
-
-       output << freq.first << ":" << freq.second;
-   }
-
-   output << "}";
+    //Write EOF placement at end of header
+    output.writeBit(EOFplace);
 }
 
 /**
@@ -189,27 +184,105 @@ void writeHeader(map<int, int> &freqTable, ostream& output){
  * Uses the header to construct and return an encoding tree.
  */
 HuffmanNode* readHeader(ibitstream& input){
-    map<int, int> freqMap;
+    HuffmanNode* zero1;
+    HuffmanNode* zero2;
 
-    char curChar;
-    input >> curChar;
+    HuffmanNode* root = readHeaderRec(input, zero1, zero2);
 
-    while(curChar != '}'){
-        int ascii;
-        int frequency;
+    cout << "returned?"<< endl;
 
-        input >> ascii;
-        input.get();
-        input >> frequency;
+    int EOFplace = input.readBit();
 
-        freqMap.insert(pair<int, int>(ascii, frequency));
+    cout << "halp" << endl;
 
-        input >> curChar;
+    cout << "pointers: " << zero1 << " " << zero2 << endl;
+
+    if(EOFplace == 0){
+
+        cout << 1 << endl;
+        zero1->character = PSEUDO_EOF;
+        cout << "wut" << endl;
+    }
+    else{
+
+        cout << 2 << endl;
+        zero2->character = PSEUDO_EOF;
     }
 
-    HuffmanNode* tree = buildEncodingTree(freqMap);
+    cout << "still there?" << endl;
 
-    return tree;
+    return root;
+}
+
+void writeHeaderRec(HuffmanNode* root, obitstream& output, bool& zeroFound, int& EOFplace){
+    if(root->isLeaf()){
+        output.writeBit(0);
+
+        if(root->character == 0){
+            zeroFound = true;
+        }
+        else if(root->character == PSEUDO_EOF){
+            EOFplace = zeroFound;
+
+            writeNext8bits(0, output);
+        }
+        else{
+            writeNext8bits(root->character, output);
+        }
+
+        return;
+    }
+
+    output.writeBit(1);
+    writeHeaderRec(root->zero, output, zeroFound, EOFplace);
+    writeHeaderRec(root->one, output, zeroFound, EOFplace);
+}
+
+HuffmanNode* readHeaderRec(ibitstream& input, HuffmanNode* zero1, HuffmanNode* zero2){
+    int bit = input.readBit();
+
+    if(bit == 0){
+        int ascii = readNext8Bits(input);
+
+        HuffmanNode* newNode = new HuffmanNode(ascii);
+
+        if(ascii == 0){
+            if(zero1 != nullptr){
+                zero1 = newNode;
+            }
+            else{
+                zero2 = newNode;
+            }
+        }
+
+        return newNode;
+    }
+
+    return new HuffmanNode(NOT_A_CHAR, 0, readHeaderRec(input, zero1, zero2), readHeaderRec(input, zero1, zero2));
+}
+
+void writeNext8bits(const int ascii, obitstream& output){
+
+     string binary = bitset<8>(ascii).to_string(); //Source http://stackoverflow.com/questions/22746429/c-decimal-to-binary-converting
+     for(char c : binary){
+         output.writeBit( c == '1' );
+     }
+}
+
+int readNext8Bits(ibitstream& input){
+
+    string binary;
+
+    for(int i = 0; i < 8; i++){
+        if(input.readBit() == 1){
+            binary += "1";
+        }
+        else{
+            binary += "0";
+        }
+    }
+
+    return bitset<8>(binary).to_ulong();
 }
 
 /*
