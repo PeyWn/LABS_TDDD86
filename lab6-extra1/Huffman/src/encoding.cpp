@@ -184,32 +184,19 @@ void writeHeader(HuffmanNode* root, obitstream& output){
  * Uses the header to construct and return an encoding tree.
  */
 HuffmanNode* readHeader(ibitstream& input){
-    HuffmanNode* zero1;
-    HuffmanNode* zero2;
+    HuffmanNode* zero1 = nullptr;
+    HuffmanNode* zero2 = nullptr;
 
     HuffmanNode* root = readHeaderRec(input, zero1, zero2);
 
-    cout << "returned?"<< endl;
-
     int EOFplace = input.readBit();
 
-    cout << "halp" << endl;
-
-    cout << "pointers: " << zero1 << " " << zero2 << endl;
-
     if(EOFplace == 0){
-
-        cout << 1 << endl;
         zero1->character = PSEUDO_EOF;
-        cout << "wut" << endl;
     }
     else{
-
-        cout << 2 << endl;
         zero2->character = PSEUDO_EOF;
     }
-
-    cout << "still there?" << endl;
 
     return root;
 }
@@ -220,6 +207,8 @@ void writeHeaderRec(HuffmanNode* root, obitstream& output, bool& zeroFound, int&
 
         if(root->character == 0){
             zeroFound = true;
+
+            writeNext8bits(0, output);
         }
         else if(root->character == PSEUDO_EOF){
             EOFplace = zeroFound;
@@ -238,7 +227,7 @@ void writeHeaderRec(HuffmanNode* root, obitstream& output, bool& zeroFound, int&
     writeHeaderRec(root->one, output, zeroFound, EOFplace);
 }
 
-HuffmanNode* readHeaderRec(ibitstream& input, HuffmanNode* zero1, HuffmanNode* zero2){
+HuffmanNode* readHeaderRec(ibitstream& input, HuffmanNode* &zero1, HuffmanNode* &zero2){
     int bit = input.readBit();
 
     if(bit == 0){
@@ -247,7 +236,7 @@ HuffmanNode* readHeaderRec(ibitstream& input, HuffmanNode* zero1, HuffmanNode* z
         HuffmanNode* newNode = new HuffmanNode(ascii);
 
         if(ascii == 0){
-            if(zero1 != nullptr){
+            if(zero1 == nullptr){
                 zero1 = newNode;
             }
             else{

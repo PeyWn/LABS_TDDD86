@@ -42,6 +42,12 @@ istream* openInputStream(string data, bool isFile, bool isBits = false);
 istream* openStringOrFileInputStream(string& data, bool& isFile, bool isBits = false);
 
 int main() {
+    HuffmanNode* test = new HuffmanNode(0);
+
+    test->character = 20;
+
+    cout << test->character << endl;
+
     intro();
 
     // these variables maintain state between steps 1-4

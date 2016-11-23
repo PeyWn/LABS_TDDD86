@@ -42,7 +42,7 @@ HuffmanNode* readHeader(ibitstream& input);
 
 void writeHeaderRec(HuffmanNode* root, obitstream& output, bool& zeroFound, int& EOFplace);
 
-HuffmanNode* readHeaderRec(ibitstream& input, HuffmanNode* zero1, HuffmanNode* zero2);
+HuffmanNode* readHeaderRec(ibitstream& input, HuffmanNode* &zero1, HuffmanNode* &zero2);
 
 void writeNext8bits(const int ascii, obitstream& output);
 
