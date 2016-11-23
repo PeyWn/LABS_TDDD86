@@ -171,7 +171,7 @@ void freeTree(HuffmanNode* node){
  */
 void writeHeader(HuffmanNode* root, obitstream& output){
     bool zeroFound = false;
-    int EOFplace = 0; //0 = first, 1 = second
+    int EOFplace = 0; //0 = first, 1 = second (placement of End Of File)
 
     writeHeaderRec(root, output, zeroFound, EOFplace);
 
@@ -201,9 +201,12 @@ HuffmanNode* readHeader(ibitstream& input){
     return root;
 }
 
+/*
+ * Recursive help function for writing the header
+ */
 void writeHeaderRec(HuffmanNode* root, obitstream& output, bool& zeroFound, int& EOFplace){
     if(root->isLeaf()){
-        output.writeBit(0);
+        output.writeBit(0); //Leaf
 
         if(root->character == 0){
             zeroFound = true;
@@ -222,11 +225,14 @@ void writeHeaderRec(HuffmanNode* root, obitstream& output, bool& zeroFound, int&
         return;
     }
 
-    output.writeBit(1);
+    output.writeBit(1); //Internal node
     writeHeaderRec(root->zero, output, zeroFound, EOFplace);
     writeHeaderRec(root->one, output, zeroFound, EOFplace);
 }
 
+/*
+ * Recursive help function for reading the header
+ */
 HuffmanNode* readHeaderRec(ibitstream& input, HuffmanNode* &zero1, HuffmanNode* &zero2){
     int bit = input.readBit();
 
@@ -250,6 +256,9 @@ HuffmanNode* readHeaderRec(ibitstream& input, HuffmanNode* &zero1, HuffmanNode* 
     return new HuffmanNode(NOT_A_CHAR, 0, readHeaderRec(input, zero1, zero2), readHeaderRec(input, zero1, zero2));
 }
 
+/*
+ * Writes the given int (has to be < 256) as 8 bits to the output stream;
+ */
 void writeNext8bits(const int ascii, obitstream& output){
 
      string binary = bitset<8>(ascii).to_string(); //Source http://stackoverflow.com/questions/22746429/c-decimal-to-binary-converting
@@ -258,6 +267,9 @@ void writeNext8bits(const int ascii, obitstream& output){
      }
 }
 
+/*
+ * Reads 8 bits and returns corresponding int.
+ */
 int readNext8Bits(ibitstream& input){
 
     string binary;
