@@ -15,18 +15,9 @@
 #include "Point.h"
 
 // constants
+/*
 static const int SCENE_WIDTH = 512;
 static const int SCENE_HEIGHT = 512;
-
-void render_points(QGraphicsScene* scene, const vector<Point>& points) {
-    for(const auto& point : points) {
-        point.draw(scene);
-    }
-}
-
-void render_line(QGraphicsScene* scene, const Point& p1, const Point& p2) {
-    p1.lineTo(scene, p2);
-}
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
@@ -92,3 +83,4 @@ int main(int argc, char *argv[]) {
 
     return a.exec(); // start Qt event loop
 }
+*/

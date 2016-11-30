@@ -22,15 +22,13 @@ void render_line(QGraphicsScene* scene, const Point& p1, const Point& p2) {
     p1.lineTo(scene, p2);
 }
 
-bool compare_points(){
 
-}
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
     // open file
-    string filename = "input6400.txt";
+    string filename = "input100.txt";
     ifstream input;
     input.open(filename);
 
@@ -58,7 +56,7 @@ int main(int argc, char *argv[]) {
     render_points(scene, points);
     view->scale(1, -1); //screen y-axis is inverted
     view->resize(view->sizeHint());
-    view->setWindowTitle("Brute Force Pattern Recognition");
+    view->setWindowTitle("Uber Jolted Turbo Fast Pattern Recognition");
     view->show();
 
     // sort points by natural order
@@ -66,8 +64,35 @@ int main(int argc, char *argv[]) {
     sort(points.begin(), points.end());
     auto begin = chrono::high_resolution_clock::now();
 
-    // iterate through all combinations of 4 points
-    for (int i = 0 ; i < N-3 ; ++i) {
+    for (int i = 0 ; i < N ; ++i) {
+        Point& curP = points.at(N-i-1);
+        points.pop_back();
+
+        auto dSlope = [&curP](const Point& p1, const Point& p2) -> bool{return p1.slopeTo(curP) < p2.slopeTo(curP);};
+        stable_sort(points.begin(), points.end(), dSlope);
+
+        Point* firstP = &points.at(0);
+        Point* lastP = nullptr;
+        double curTilt = points.at(0).slopeTo(curP);
+
+        for(int j = 1; j < points.size(); j++){
+            if(points.at(j).slopeTo(curP) != curTilt){
+                //Finish last line
+                lastP = &points.at(j - 1);
+                if(firstP != lastP){
+                    //Draw line
+                    render_line(scene, *firstP, *lastP);
+                }
+
+                firstP = &points.at(j);
+            }
+        }
+
+        lastP = &points.at(points.size() - 1);
+        if(firstP != lastP){
+            //Draw line
+            render_line(scene, *firstP, *lastP);
+        }
 
     }
 
