@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
     // open file
-    string filename = "input100.txt";
+    string filename = "input400.txt";
     ifstream input;
     input.open(filename);
 
@@ -61,39 +61,39 @@ int main(int argc, char *argv[]) {
 
     // sort points by natural order
     // makes finding endpoints of line segments easy
-    sort(points.begin(), points.end());
+   stable_sort(points.begin(), points.end());
     auto begin = chrono::high_resolution_clock::now();
 
-    for (int i = 0 ; i < N ; ++i) {
-        Point& curP = points.at(N-i-1);
+    for (int i = 0 ; points.size() > 2; i++) {
+        Point& curP = points.at(points.size()-1);
         points.pop_back();
 
         auto dSlope = [&curP](const Point& p1, const Point& p2) -> bool{return p1.slopeTo(curP) < p2.slopeTo(curP);};
-        stable_sort(points.begin(), points.end(), dSlope);
+        sort(points.begin(), points.end(), dSlope);
 
-        Point* firstP = &points.at(0);
-        Point* lastP = nullptr;
-        double curTilt = points.at(0).slopeTo(curP);
+        vector<Point> curTilt = {points.at(0)};
 
         for(int j = 1; j < points.size(); j++){
-            if(points.at(j).slopeTo(curP) != curTilt){
-                //Finish last line
-                lastP = &points.at(j - 1);
-                if(firstP != lastP){
-                    //Draw line
-                    render_line(scene, *firstP, *lastP);
+            if(points.at(j).slopeTo(curP) == curTilt.front().slopeTo(curP)){
+                curTilt.push_back(points.at(j));
+            }
+            else{
+                if(curTilt.size() >= 3){
+                    curTilt.push_back(curP);
+                    sort(curTilt.begin(), curTilt.end());
+                    render_line(scene, curTilt.front(), curTilt.at(curTilt.size() - 1));
                 }
 
-                firstP = &points.at(j);
+                curTilt.clear();
+                curTilt.push_back(points.at(j));
             }
         }
 
-        lastP = &points.at(points.size() - 1);
-        if(firstP != lastP){
-            //Draw line
-            render_line(scene, *firstP, *lastP);
+        if(curTilt.size() >= 3){
+            curTilt.push_back(curP);
+            sort(curTilt.begin(), curTilt.end());
+            render_line(scene, curTilt.front(), curTilt.at(curTilt.size() - 1));
         }
-
     }
 
     auto end = chrono::high_resolution_clock::now();
