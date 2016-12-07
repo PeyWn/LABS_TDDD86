@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
-#include <vector>
+#include <set>
 #include <chrono>
 #include "Point.h"
 
@@ -22,13 +22,18 @@ void render_line(QGraphicsScene* scene, const Point& p1, const Point& p2) {
     p1.lineTo(scene, p2);
 }
 
-
+void finishSet(const Point& curP, set<Point>* points, QGraphicsScene* scene){
+    if(points->size() >= 3){
+        points->insert(curP);
+        render_line(scene, *points->begin(), *points->rbegin());
+    }
+}
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
     // open file
-    string filename = "input400.txt";
+    string filename = "input56.txt";
     ifstream input;
     input.open(filename);
 
@@ -71,29 +76,21 @@ int main(int argc, char *argv[]) {
         auto dSlope = [&curP](const Point& p1, const Point& p2) -> bool{return p1.slopeTo(curP) < p2.slopeTo(curP);};
         sort(points.begin(), points.end(), dSlope);
 
-        vector<Point> curTilt = {points.at(0)};
+        set<Point> curTilt = {points.at(0)};
 
         for(int j = 1; j < points.size(); j++){
-            if(points.at(j).slopeTo(curP) == curTilt.front().slopeTo(curP)){
-                curTilt.push_back(points.at(j));
+            if(points.at(j).slopeTo(curP) == curTilt.begin()->slopeTo(curP)){
+                curTilt.insert(points.at(j));
             }
             else{
-                if(curTilt.size() >= 3){
-                    curTilt.push_back(curP);
-                    sort(curTilt.begin(), curTilt.end());
-                    render_line(scene, curTilt.front(), curTilt.at(curTilt.size() - 1));
-                }
+                finishSet(curP, &curTilt, scene);
 
                 curTilt.clear();
-                curTilt.push_back(points.at(j));
+                curTilt.insert(points.at(j));
             }
         }
 
-        if(curTilt.size() >= 3){
-            curTilt.push_back(curP);
-            sort(curTilt.begin(), curTilt.end());
-            render_line(scene, curTilt.front(), curTilt.at(curTilt.size() - 1));
-        }
+        finishSet(curP, &curTilt, scene);
     }
 
     auto end = chrono::high_resolution_clock::now();
