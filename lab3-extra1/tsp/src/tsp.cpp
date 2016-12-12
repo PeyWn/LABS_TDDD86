@@ -47,12 +47,14 @@ int main(int argc, char *argv[]) {
         scene->clear();
         tour.draw(scene);
         cout << tour.size() << endl;
-        tour.delCrossingLines();
-        std::chrono::milliseconds dura(4000);
-        std::this_thread::sleep_for(dura);
+        //std::chrono::milliseconds dura(4000);
+        //std::this_thread::sleep_for(dura);
+
         a.processEvents();
     }
     input.close();
+
+    tour.delCrossingLines();
 
     // print tour to standard output
     cout << "Tour distance: " << std::fixed << std::setprecision(4)

@@ -53,6 +53,7 @@ public:
 
     void delCrossingLines();
 
+    void reverseOrder(Node* start, Node* end);
 private:
     Node* firstNode = nullptr;
 };

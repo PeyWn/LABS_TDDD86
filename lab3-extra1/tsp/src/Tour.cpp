@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include "Tour.h"
 #include "Node.h"
 #include "Point.h"
@@ -142,58 +142,55 @@ void Tour::insertSmallest(Point p)
 
 void Tour::delCrossingLines()
 {
-    cout << "Del crossing" << endl;
-    if(firstNode == nullptr){
-        return;
-    }
-
-    Node* curNode = firstNode;
+    /*
+    Node* newFirst = firstNode->next;
+    reverseOrder(firstNode->next, firstNode);
+    newFirst->next = firstNode;
+    */
+    Node* compNode1 = firstNode;
+    Node* compNode2;
 
     do{
-        cout << "curNode: " << curNode << endl;
+        compNode2 = compNode1->next;
+        while(compNode2 != compNode1){
+            //find cross
+            cout << "d1: " << (compNode1->point.distanceTo(compNode1->next->point) +
+                               compNode2->point.distanceTo(compNode2->next->point)) << endl;
 
-        Node* compNode = curNode->next;
-
-        while (compNode != curNode) {
-            cout << "compNode: " << compNode << " next: " << compNode->next << endl;
-
-            /**
-            *Checks if a switch would result in a shorter route
-            */
-            if((curNode->point.distanceTo(compNode->point) + curNode->next->point.distanceTo(compNode->next->point))
-                 < (curNode->point.distanceTo(curNode->next->point) + compNode->point.distanceTo(compNode->next->point))){
+            cout << "d2: " << (compNode1->point.distanceTo(compNode2->point) +
+                               compNode1->next->point.distanceTo(compNode2->next->point)) << endl;
+            if((compNode1->point.distanceTo(compNode1->next->point) +
+                compNode2->point.distanceTo(compNode2->next->point)) >
+                    (compNode1->point.distanceTo(compNode2->point) +
+                     compNode1->next->point.distanceTo(compNode2->next->point))){
+                cout << "switch?" << endl;
                 //Do switch
-                cout << "DO SWITCH!" << endl;
+                Node* comp1Next = compNode1->next;
+                Node* comp2Next = compNode2->next;
 
-                vector<Node*> curToCompNodes;
-
-                //Add all points from curNode to compNode to a vector
-                Node* compNext = compNode->next;
-
-                Node* vectorAdder = curNode->next->next;
-                while(vectorAdder != compNext){
-                    //cout << "add to vector: " << *vectorAdder << endl;
-                    curToCompNodes.push_back(vectorAdder);
-
-                    vectorAdder = vectorAdder->next;
-                }
-
-                //Reverse the pointing direction of every node in curToCompnodes
-                for(int i = 0; i < curToCompNodes.size()- 1; i++){
-                    curToCompNodes[i + 1]->next = curToCompNodes[i];
-                }
-
-                curNode->next->next = compNext;
-                curNode->next = compNode;
-                compNode = compNext;
+                reverseOrder(comp1Next, compNode2);
+                comp1Next->next = comp2Next;
+                compNode1->next = compNode2;
             }
 
-            compNode = compNode->next;
+            compNode2 = compNode2->next;
         }
-
-        curNode = curNode->next;
-
-    }while(curNode != firstNode);
+        compNode1 = compNode1->next;
+    }while(compNode1 != firstNode);
 }
 
+void Tour::reverseOrder(Node* start, Node* end){
+    Node* refNode = start;
+    Node* curNode = start->next;
+    Node* curNextNode = start->next->next;
 
+    while(refNode != end){
+        curNode->next = refNode;
+
+        refNode = curNode;
+        curNode = curNode->next;
+        curNextNode = curNode->next;
+
+        //cout << curNode->toString() << " " << curNextNode->endl;
+    }
+}
